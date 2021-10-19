@@ -16,6 +16,8 @@ public class PanelBehaviourScript : MonoBehaviour
 
     bool isGameOver;
 
+    private AudioController gameAudio;
+
     struct pointPanel
     {
         public int x;
@@ -25,18 +27,19 @@ public class PanelBehaviourScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        gameAudio = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<AudioController>();
         RestartGame();
     }
 
     public void RestartGame()
     {
         ClearPanels();
-
         PlaceTwoFour();
         PlaceTwoFour();
         isGameOver = false;
         ShowGameOver(isGameOver);
         WritePanels();
+        gameAudio.PlayMusic();
     }
 
     private void ShiftXRight(int y)
@@ -106,8 +109,7 @@ public class PanelBehaviourScript : MonoBehaviour
             }
             ShiftXRight(y);
         }
-        PlaceTwoFour();
-        WritePanels();
+        EndStep();
     }
 
     public void ShiftDown()
@@ -125,8 +127,7 @@ public class PanelBehaviourScript : MonoBehaviour
             }
             ShiftYDown(x);
         }
-        PlaceTwoFour();
-        WritePanels();
+        EndStep();
     }
 
     public void ShiftLeft()
@@ -144,8 +145,7 @@ public class PanelBehaviourScript : MonoBehaviour
             }
             ShiftXLeft(y);
         }
-        PlaceTwoFour();
-        WritePanels();
+        EndStep();
     }
 
     public void ShiftUp()
@@ -163,8 +163,21 @@ public class PanelBehaviourScript : MonoBehaviour
             }
             ShiftYUp(x);
         }
+        EndStep();
+    }
+
+    void EndStep()
+    {
+        RemoveYellow();
         PlaceTwoFour();
         WritePanels();
+    }
+
+    void RemoveYellow()
+    {
+        for (int x = 0; x < 4; x++)
+            for (int y = 0; y < 4; y++)
+                textArray[x + y * 4].color = Color.white;
     }
 
     void PlaceTwoFour()
@@ -178,6 +191,7 @@ public class PanelBehaviourScript : MonoBehaviour
         {
             isGameOver = true;
             ShowGameOver(isGameOver);
+            gameAudio.StopMusic();
         }
     }
 
@@ -221,10 +235,12 @@ public class PanelBehaviourScript : MonoBehaviour
         if (UnityEngine.Random.Range(0, 100) > 10)
         {
             panels[x, y] = 2;
+            textArray[x + y * 4].color = Color.yellow;
         }
         else
         {
             panels[x, y] = 4;
+            textArray[x + y * 4].color = Color.yellow;
         }
     }
 
