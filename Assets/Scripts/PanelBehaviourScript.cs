@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using TMPro;
 
 public class PanelBehaviourScript : MonoBehaviour
 {
     public Text[] textArray;
 
+    public TextMeshProUGUI gameOverText;
+    public Button restartButton;
+
     private int[,] panels = new int[4, 4];
+
+    bool isGameOver;
+
     struct pointPanel
     {
         public int x;
@@ -18,27 +25,77 @@ public class PanelBehaviourScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        clearPanels();
-
-        placeTwoFour();
-        placeTwoFour();
-
-        writePanels();
+        RestartGame();
     }
 
-    public void shiftRight()
+    public void RestartGame()
+    {
+        ClearPanels();
+
+        PlaceTwoFour();
+        PlaceTwoFour();
+        isGameOver = false;
+        ShowGameOver(isGameOver);
+        WritePanels();
+    }
+
+    private void ShiftXRight(int y)
+    {
+        for (int i = 0; i < 3; i++)
+            for (int x = 3; x > 0; x--)
+            {
+                if (panels[x, y] == 0)
+                {
+                    panels[x, y] = panels[x - 1, y];
+                    panels[x - 1, y] = 0;
+                }
+            }
+    }
+
+    private void ShiftXLeft(int y)
+    {
+        for (int i = 0; i < 3; i++)
+            for (int x = 0; x < 3; x++)
+            {
+                if (panels[x, y] == 0)
+                {
+                    panels[x, y] = panels[x + 1, y];
+                    panels[x + 1, y] = 0;
+                }
+            }
+    }
+
+    private void ShiftYDown(int x)
+    {
+        for (int i = 0; i < 3; i++)
+            for (int y = 3; y > 0; y--)
+            {
+                if (panels[x, y] == 0)
+                {
+                    panels[x, y] = panels[x, y - 1];
+                    panels[x, y - 1] = 0;
+                }
+            }
+    }
+
+    private void ShiftYUp(int x)
+    {
+        for (int i = 0; i < 3; i++)
+            for (int y = 0; y < 3; y++)
+            {
+                if (panels[x, y] == 0)
+                {
+                    panels[x, y] = panels[x, y + 1];
+                    panels[x, y + 1] = 0;
+                }
+            }
+    }
+
+    public void ShiftRight()
     {
         for (int y = 0; y < 4; y++)
         {
-            for (int i = 0; i < 3; i++)
-                for (int x = 3; x >0 ; x--)
-                {
-                    if (panels[x, y] == 0)
-                    {
-                        panels[x, y] = panels[x - 1, y];
-                        panels[x - 1, y] = 0;
-                    }
-                }
+            ShiftXRight(y);
             for (int x = 3; x > 0; x--)
             {
                 if (panels[x - 1, y] == panels[x, y])
@@ -47,33 +104,17 @@ public class PanelBehaviourScript : MonoBehaviour
                     panels[x - 1, y] = 0;
                 }
             }
-            for (int i = 0; i < 3; i++)
-                for (int x = 3; x > 0; x--)
-                {
-                    if (panels[x, y] == 0)
-                    {
-                        panels[x, y] = panels[x - 1, y];
-                        panels[x - 1, y] = 0;
-                    }
-                }
+            ShiftXRight(y);
         }
-        placeTwoFour();
-        writePanels();
+        PlaceTwoFour();
+        WritePanels();
     }
 
-    public void shiftDown()
+    public void ShiftDown()
     {
         for (int x = 0; x < 4; x++)
         {
-            for (int i = 0; i < 3; i++)
-                for (int y = 3; y > 0; y--)
-                {
-                    if (panels[x, y] == 0)
-                    {
-                        panels[x, y] = panels[x, y - 1];
-                        panels[x, y - 1] = 0;
-                    }
-                }
+            ShiftYDown(x);
             for (int y = 3; y > 0; y--)
             {
                 if (panels[x, y - 1] == panels[x, y])
@@ -82,33 +123,17 @@ public class PanelBehaviourScript : MonoBehaviour
                     panels[x, y - 1] = 0;
                 }
             }
-            for (int i = 0; i < 3; i++)
-                for (int y = 3; y > 0; y--)
-                {
-                    if (panels[x, y] == 0)
-                    {
-                        panels[x, y] = panels[x, y - 1];
-                        panels[x, y - 1] = 0;
-                    }
-                }
+            ShiftYDown(x);
         }
-        placeTwoFour();
-        writePanels();
+        PlaceTwoFour();
+        WritePanels();
     }
 
-    public void shiftLeft()
+    public void ShiftLeft()
     {
         for (int y = 0; y < 4; y++)
         {
-            for (int i = 0; i < 3; i++)
-                for (int x = 0; x < 3; x++)
-                {
-                    if (panels[x, y] == 0)
-                    {
-                        panels[x, y] = panels[x + 1, y];
-                        panels[x + 1, y] = 0;
-                    }
-                }
+            ShiftXLeft(y);
             for (int x = 0; x < 3; x++)
             {
                 if (panels[x + 1, y] == panels[x, y])
@@ -117,33 +142,17 @@ public class PanelBehaviourScript : MonoBehaviour
                     panels[x + 1, y] = 0;
                 }
             }
-            for (int i = 0; i < 3; i++)
-                for (int x = 0; x < 3; x++)
-                {
-                    if (panels[x, y] == 0)
-                    {
-                        panels[x, y] = panels[x + 1, y];
-                        panels[x + 1, y] = 0;
-                    }
-                }
+            ShiftXLeft(y);
         }
-        placeTwoFour();
-        writePanels();
+        PlaceTwoFour();
+        WritePanels();
     }
 
-    public void shiftUp()
+    public void ShiftUp()
     {
         for (int x = 0; x < 4; x++)
         {
-            for (int i = 0; i < 3; i++)
-                for (int y = 0; y < 3; y++)
-                {
-                    if (panels[x, y] == 0)
-                    {
-                        panels[x, y] = panels[x, y + 1];
-                        panels[x, y + 1] = 0;
-                    }
-                }
+            ShiftYUp(x);
             for (int y = 0; y < 3; y++)
             {
                 if (panels[x, y + 1] == panels[x, y])
@@ -152,45 +161,47 @@ public class PanelBehaviourScript : MonoBehaviour
                     panels[x, y + 1] = 0;
                 }
             }
-            for (int i = 0; i < 3; i++)
-                for (int y = 0; y < 3; y++)
-                {
-                    if (panels[x, y] == 0)
-                    {
-                        panels[x, y] = panels[x, y + 1];
-                        panels[x, y + 1] = 0;
-                    }
-                }
+            ShiftYUp(x);
         }
-        placeTwoFour();
-        writePanels();
+        PlaceTwoFour();
+        WritePanels();
     }
 
-    void placeTwoFour()
+    void PlaceTwoFour()
     {
-        List<pointPanel> emptyPanels = getEmptyPanels();
+        List<pointPanel> emptyPanels = GetEmptyPanels();
         if (emptyPanels.Count > 0)
         {
             pointPanel emptyPoint = emptyPanels[UnityEngine.Random.Range(0, emptyPanels.Count)];
-            setTwoFour(emptyPoint.x, emptyPoint.y);
+            SetTwoFour(emptyPoint.x, emptyPoint.y);
+        } else
+        {
+            isGameOver = true;
+            ShowGameOver(isGameOver);
         }
     }
 
-    void writePanels()
+    private void ShowGameOver(bool gameOver)
+    {
+        gameOverText.gameObject.SetActive(gameOver);
+        restartButton.gameObject.SetActive(gameOver);
+    }
+
+    void WritePanels()
     {
         for (int x = 0; x < 4; x++)
             for (int y = 0; y < 4; y++)
-                setPanel(x, y, panels[x, y]);
+                SetPanel(x, y, panels[x, y]);
     }
 
-    void clearPanels()
+    void ClearPanels()
     {
         for (int x = 0; x < 4; x++)
             for (int y = 0; y < 4; y++)
                 panels[x, y] = 0;
     }
 
-    List<pointPanel> getEmptyPanels()
+    List<pointPanel> GetEmptyPanels()
     {
         List<pointPanel> lResult = new List<pointPanel>();
         for (int x = 0; x < 4; x++)
@@ -205,7 +216,7 @@ public class PanelBehaviourScript : MonoBehaviour
         return lResult;
     }
 
-    void setTwoFour(int x, int y)
+    void SetTwoFour(int x, int y)
     {
         if (UnityEngine.Random.Range(0, 100) > 10)
         {
@@ -217,7 +228,7 @@ public class PanelBehaviourScript : MonoBehaviour
         }
     }
 
-    void setPanel(int x, int y, int value)
+    void SetPanel(int x, int y, int value)
     {
         if ((x >= 0) && (x <= 3) && (y >= 0) && (y <= 3))
         {
@@ -231,22 +242,28 @@ public class PanelBehaviourScript : MonoBehaviour
             }
         }
     }
-
-    int getPanel(int x, int y)
-    {
-        if ((x >= 0) && (x <= 3) && (y >= 0) && (y <= 3))
-        {
-            return Convert.ToInt32(textArray[x + y * 4]);
-        }
-        else
-        {
-            return -1;
-        }
-    }
-
+    
     // Update is called once per frame
     void Update()
     {
-
+        if (!isGameOver)
+        {
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                ShiftDown();
+            }
+            else if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                ShiftUp();
+            }
+            else if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                ShiftLeft();
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                ShiftRight();
+            }
+        }
     }
 }
