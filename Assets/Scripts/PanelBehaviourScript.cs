@@ -7,42 +7,83 @@ using TMPro;
 
 public class PanelBehaviourScript : MonoBehaviour
 {
-    public Text[] textArray;
+    public List<Text> textArray;
 
     public TextMeshProUGUI gameOverText;
     public Button restartButton;
 
-    private int[,] panels = new int[4, 4];
+    //private int[,] panels = new int[4, 4];
 
     bool isGameOver;
+    bool isShifting;
 
     private AudioController gameAudio;
 
-    struct pointPanel
+    public CellDriver viewModelCellDriver;
+
+    /*struct pointPanel
     {
         public int x;
         public int y;
-    }
+    }*/
 
     // Start is called before the first frame update
     void Start()
     {
-        gameAudio = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<AudioController>();
+        FindObjectOfType<CellDriver>().CellsReadyEvent += OnCellsReady;
+        FindObjectOfType<CellDriver>().GameOverEvent += OnGameOver;
+        CanvasPainter canvasScript = GameObject.FindGameObjectWithTag("GameCanvas").GetComponent("CanvasPainter") as CanvasPainter;
+        canvasScript.PaintPanels();
         RestartGame();
+    }
+
+    public void OnCellsReady(CellDriver cellDriver)
+    {
+        int cellValue;
+        for (int x = 0; x < 4; x++)
+            for (int y = 0; y < 4; y++)
+            {
+                cellValue = cellDriver.GetCell(x, y).Number;
+                if (cellValue > 0)
+                {
+                    textArray[x + y * 4].text = cellValue.ToString();
+                    textArray[x + y * 4].color = Color.Lerp(Color.white, Color.red, cellValue/25f);
+                }
+                else
+                {
+                    textArray[x + y * 4].text = "";
+                }
+            }
+        isShifting = false;
+    }
+
+    public void OnGameOver(CellDriver cellDriver)
+    {
+        isGameOver = true;
+        ShowGameOver(isGameOver);
+        gameAudio.StopMusic();
     }
 
     public void RestartGame()
     {
-        ClearPanels();
+        /*ClearPanels();
         PlaceTwoFour();
         PlaceTwoFour();
         isGameOver = false;
         ShowGameOver(isGameOver);
-        WritePanels();
+        WritePanels();*/
+
+        viewModelCellDriver.InitCells();
+        viewModelCellDriver.PlaceTwoFour();
+        viewModelCellDriver.PlaceTwoFour();
+        isGameOver = false;
+        isShifting = false;
+        ShowGameOver(isGameOver);
+        gameAudio = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<AudioController>();
         gameAudio.PlayMusic();
     }
 
-    private void ShiftXRight(int y)
+    /*private void ShiftXRight(int y)
     {
         for (int i = 0; i < 3; i++)
             for (int x = 3; x > 0; x--)
@@ -101,9 +142,9 @@ public class PanelBehaviourScript : MonoBehaviour
             ShiftXRight(y);
             for (int x = 3; x > 0; x--)
             {
-                if (panels[x - 1, y] == panels[x, y])
+                if ((panels[x - 1, y] == panels[x, y]) && (panels[x, y] != 0))
                 {
-                    panels[x, y] = panels[x, y] + panels[x - 1, y];
+                    panels[x, y]++;// = panels[x, y] + panels[x - 1, y];
                     panels[x - 1, y] = 0;
                 }
             }
@@ -119,9 +160,9 @@ public class PanelBehaviourScript : MonoBehaviour
             ShiftYDown(x);
             for (int y = 3; y > 0; y--)
             {
-                if (panels[x, y - 1] == panels[x, y])
+                if ((panels[x, y - 1] == panels[x, y]) && (panels[x, y] != 0))
                 {
-                    panels[x, y] = panels[x, y] + panels[x, y - 1];
+                    panels[x, y]++;// = panels[x, y] + panels[x, y - 1];
                     panels[x, y - 1] = 0;
                 }
             }
@@ -137,9 +178,9 @@ public class PanelBehaviourScript : MonoBehaviour
             ShiftXLeft(y);
             for (int x = 0; x < 3; x++)
             {
-                if (panels[x + 1, y] == panels[x, y])
+                if ((panels[x + 1, y] == panels[x, y]) && (panels[x, y] != 0))
                 {
-                    panels[x, y] = panels[x, y] + panels[x + 1, y];
+                    panels[x, y]++;// = panels[x, y] + panels[x + 1, y];
                     panels[x + 1, y] = 0;
                 }
             }
@@ -155,9 +196,9 @@ public class PanelBehaviourScript : MonoBehaviour
             ShiftYUp(x);
             for (int y = 0; y < 3; y++)
             {
-                if (panels[x, y + 1] == panels[x, y])
+                if ((panels[x, y + 1] == panels[x, y]) && (panels[x, y] != 0))
                 {
-                    panels[x, y] = panels[x, y] + panels[x, y + 1];
+                    panels[x, y]++;// = panels[x, y] + panels[x, y + 1];
                     panels[x, y + 1] = 0;
                 }
             }
@@ -187,13 +228,14 @@ public class PanelBehaviourScript : MonoBehaviour
         {
             pointPanel emptyPoint = emptyPanels[UnityEngine.Random.Range(0, emptyPanels.Count)];
             SetTwoFour(emptyPoint.x, emptyPoint.y);
-        } else
+        }
+        else
         {
             isGameOver = true;
             ShowGameOver(isGameOver);
             gameAudio.StopMusic();
         }
-    }
+    }*/
 
     private void ShowGameOver(bool gameOver)
     {
@@ -201,7 +243,7 @@ public class PanelBehaviourScript : MonoBehaviour
         restartButton.gameObject.SetActive(gameOver);
     }
 
-    void WritePanels()
+    /*void WritePanels()
     {
         for (int x = 0; x < 4; x++)
             for (int y = 0; y < 4; y++)
@@ -234,12 +276,12 @@ public class PanelBehaviourScript : MonoBehaviour
     {
         if (UnityEngine.Random.Range(0, 100) > 10)
         {
-            panels[x, y] = 2;
+            panels[x, y] = 1;//2;
             textArray[x + y * 4].color = Color.yellow;
         }
         else
         {
-            panels[x, y] = 4;
+            panels[x, y] = 2;//4;
             textArray[x + y * 4].color = Color.yellow;
         }
     }
@@ -257,28 +299,40 @@ public class PanelBehaviourScript : MonoBehaviour
                 textArray[x + y * 4].text = "";
             }
         }
-    }
-    
+    }*/
+
     // Update is called once per frame
     void Update()
     {
-        if (!isGameOver)
+        if ((!isGameOver) && (!isShifting))
         {
             if (Input.GetKeyDown(KeyCode.DownArrow))
             {
-                ShiftDown();
+                //ShiftDown();
+                viewModelCellDriver.clearCollapsed();
+                isShifting = true;
+                viewModelCellDriver.TryShift(0, 1);
             }
             else if (Input.GetKeyDown(KeyCode.UpArrow))
             {
-                ShiftUp();
+                //ShiftUp();
+                viewModelCellDriver.clearCollapsed();
+                isShifting = true;
+                viewModelCellDriver.TryShift(0, -1);
             }
             else if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
-                ShiftLeft();
+                //ShiftLeft();
+                viewModelCellDriver.clearCollapsed();
+                isShifting = true;
+                viewModelCellDriver.TryShift(-1, 0);
             }
             else if (Input.GetKeyDown(KeyCode.RightArrow))
             {
-                ShiftRight();
+                //ShiftRight();
+                viewModelCellDriver.clearCollapsed();
+                isShifting = true;
+                viewModelCellDriver.TryShift(1, 0);
             }
         }
     }

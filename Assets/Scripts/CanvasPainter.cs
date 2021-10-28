@@ -1,0 +1,60 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class CanvasPainter : MonoBehaviour
+{
+    public GameObject panelPrefab;
+    public List<GameObject> panelList = new List<GameObject>();
+
+    private void Awake()
+    {
+
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        FindObjectOfType<CellDriver>().CellShiftEvent += onCellShift;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+
+    public void onCellShift(CellDriver cellDriver)
+    {
+        ShiftPanel(cellDriver.xForShift, cellDriver.yForShift, cellDriver.dxForShift, cellDriver.dyForShift, cellDriver.numForShift);
+    }
+
+    public void PaintPanels()
+    {
+        if (panelPrefab != null)
+        {
+            PanelBehaviourScript panelScript = GameObject.FindGameObjectWithTag("GameController").GetComponent("PanelBehaviourScript") as PanelBehaviourScript;
+            for (int y = 0; y < 4; y++)
+                for (int x = 0; x < 4; x++)
+                {
+                    GameObject panel = Instantiate(panelPrefab, new Vector3(x * 110 - 114, -y * 110 + 114, 0), Quaternion.identity);
+                    panel.transform.SetParent(GameObject.FindGameObjectWithTag("PanelKeeper").transform, false);
+                    panelList.Add(panel);
+                    Text panelText = panel.transform.Find("Text").GetComponent<Text>();
+                    if (panelText != null)
+                    {
+                        panelScript.textArray.Add(panelText);
+                    }
+                }
+        }
+    }
+
+    void ShiftPanel(int x, int y, int dx, int dy, int num)
+    {
+        PanelView destinationPanel = panelList[(y + dy) * 4 + (x + dx)].GetComponent<PanelView>();
+        panelList[y * 4 + x].GetComponent<PanelView>().ShiftPanel(dx, dy, destinationPanel, num);
+    }
+
+    
+}

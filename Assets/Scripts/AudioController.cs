@@ -9,7 +9,7 @@ public class AudioController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        audioSource = gameObject.GetComponent<AudioSource>();
+
     }
 
     // Update is called once per frame
@@ -20,11 +20,11 @@ public class AudioController : MonoBehaviour
 
     public void PlayMusic()
     {
-        audioSource.Play();
+        gameObject.GetComponent<AudioSource>().Play();
     }
 
     public void StopMusic()
     {
-        audioSource.Stop();
+        gameObject.GetComponent<AudioSource>().Stop();
     }
 }
