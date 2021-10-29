@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,17 +15,6 @@ public class CellDriver : MonoBehaviour
 
     public delegate void gameOver(CellDriver cellDriver);
     public event gameOver GameOverEvent;
-
-    /*public int xForShift;
-    public int yForShift;
-    public int dxForShift;
-    public int dyForShift;
-    public int numForShift;*/
-
-    private void Start()
-    {
-        
-    }
 
     public void clearCollapsed()
     {
@@ -74,11 +62,6 @@ public class CellDriver : MonoBehaviour
 
     private void StartShift(int x, int y, int dx, int dy, int num)
     {
-        /*xForShift = x;
-        yForShift = y;
-        dxForShift = dx;
-        dyForShift = dy;
-        numForShift = num;*/
         CellShiftEvent?.Invoke(this, x, y, dx, dy, num);
     }
 

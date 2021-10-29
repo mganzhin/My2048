@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,26 +7,13 @@ public class CanvasPainter : MonoBehaviour
     public GameObject panelPrefab;
     public List<GameObject> panelList = new List<GameObject>();
 
-    private void Awake()
+    private void Start()
     {
-
+        FindObjectOfType<CellDriver>().CellShiftEvent += OnCellShift;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void OnCellShift(CellDriver cellDriver, int x, int y, int dx, int dy, int num)
     {
-        FindObjectOfType<CellDriver>().CellShiftEvent += onCellShift;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    public void onCellShift(CellDriver cellDriver, int x, int y, int dx, int dy, int num)
-    {
-        //ShiftPanel(cellDriver.xForShift, cellDriver.yForShift, cellDriver.dxForShift, cellDriver.dyForShift, cellDriver.numForShift);
         ShiftPanel(x, y, dx, dy, num);
     }
 

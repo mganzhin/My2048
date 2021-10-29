@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 using TMPro;
 
 public class PanelBehaviourScript : MonoBehaviour
@@ -15,6 +13,9 @@ public class PanelBehaviourScript : MonoBehaviour
 
     bool isGameOver;
     bool isShifting;
+
+    private Touch theTouch;
+    private Vector2 touchStartPosition, touchEndPosition;
 
     private AudioController gameAudio;
 
@@ -77,6 +78,13 @@ public class PanelBehaviourScript : MonoBehaviour
         restartButton.gameObject.SetActive(gameOver);
     }
     
+    private void Shift(int dx, int dy)
+    {
+        viewModelCellDriver.clearCollapsed();
+        isShifting = true;
+        viewModelCellDriver.TryShift(dx, dy);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -84,31 +92,57 @@ public class PanelBehaviourScript : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.DownArrow))
             {
-                //ShiftDown();
-                viewModelCellDriver.clearCollapsed();
-                isShifting = true;
-                viewModelCellDriver.TryShift(0, 1);
+                Shift(0, 1);
             }
             else if (Input.GetKeyDown(KeyCode.UpArrow))
             {
-                //ShiftUp();
-                viewModelCellDriver.clearCollapsed();
-                isShifting = true;
-                viewModelCellDriver.TryShift(0, -1);
+                Shift(0, -1);
             }
             else if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
-                //ShiftLeft();
-                viewModelCellDriver.clearCollapsed();
-                isShifting = true;
-                viewModelCellDriver.TryShift(-1, 0);
+                Shift(-1, 0);
             }
             else if (Input.GetKeyDown(KeyCode.RightArrow))
             {
-                //ShiftRight();
-                viewModelCellDriver.clearCollapsed();
-                isShifting = true;
-                viewModelCellDriver.TryShift(1, 0);
+                Shift(1, 0);
+            } else if (Input.touchCount > 0)
+            {
+                theTouch = Input.GetTouch(0);
+
+                if (theTouch.phase == TouchPhase.Began)
+                {
+                    touchStartPosition = theTouch.position;
+                }
+
+                else if (theTouch.phase == TouchPhase.Moved || theTouch.phase == TouchPhase.Ended)
+                {
+                    touchEndPosition = theTouch.position;
+
+                    float x = touchEndPosition.x - touchStartPosition.x;
+                    float y = touchEndPosition.y - touchStartPosition.y;
+
+                    if (Mathf.Abs(x) > Mathf.Abs(y))
+                    {
+                        if (x > 10f)
+                        {
+                            Shift(1, 0);
+                        }
+                        else if (x < -10f)
+                        {
+                            Shift(-1, 0);
+                        }
+                    }
+                    else
+                    {
+                        if (y > 10f)
+                        {
+                            Shift(0, -1);
+                        } else if (y < -10f)
+                        {
+                            Shift(0, 1);
+                        }
+                    }
+                }
             }
         }
     }
