@@ -12,7 +12,9 @@ public class PanelView : MonoBehaviour
     Vector3 startPoint;
     float speed = 10;
     PanelView panelViewPutShift;
-    int numPutShift;
+    private int numPutShift;
+    private int deltaX;
+    private int deltaY;
 
     // Start is called before the first frame update
     void Start()
@@ -25,6 +27,8 @@ public class PanelView : MonoBehaviour
         startX = transform.position.x;
         startY = transform.position.y;
         startPoint = transform.position;
+        deltaX = dx;
+        deltaY = dy;
         distanceX = dx * 25;
         distanceY = -dy * 25;
         panelViewPutShift = desinationPanelView;
@@ -50,6 +54,11 @@ public class PanelView : MonoBehaviour
                 {
                     panelText.text = "";
                 }
+                Text panelText2 = transform.Find("Text2").GetComponent<Text>();
+                if (panelText2 != null)
+                {
+                    panelText2.text = "";
+                }
                 if (panelViewPutShift != null)
                 {
                     Text panelPutShiftText = panelViewPutShift.transform.Find("Text").GetComponent<Text>();
@@ -57,11 +66,16 @@ public class PanelView : MonoBehaviour
                     {
                         panelPutShiftText.text = numPutShift.ToString();
                     }
+                    Text panelPutShiftText2 = panelViewPutShift.transform.Find("Text2").GetComponent<Text>();
+                    if (panelPutShiftText2 != null)
+                    {
+                        panelPutShiftText2.text = "2";
+                    }
                 }
                 CellDriver cellDriver = FindObjectOfType<CellDriver>();
                 if (cellDriver != null)
                 {
-                    cellDriver.TryShift(cellDriver.dxForShift, cellDriver.dyForShift);
+                    cellDriver.TryShift(deltaX, deltaY);
                 }
             }
         }

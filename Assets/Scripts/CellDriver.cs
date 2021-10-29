@@ -11,17 +11,17 @@ public class CellDriver : MonoBehaviour
     public delegate void cellsReady(CellDriver cellDriver);
     public event cellsReady CellsReadyEvent;
 
-    public delegate void cellShift(CellDriver cellDriver);
+    public delegate void cellShift(CellDriver cellDriver, int x, int y, int dx, int dy, int num);
     public event cellShift CellShiftEvent;
 
     public delegate void gameOver(CellDriver cellDriver);
     public event gameOver GameOverEvent;
 
-    public int xForShift;
+    /*public int xForShift;
     public int yForShift;
     public int dxForShift;
     public int dyForShift;
-    public int numForShift;
+    public int numForShift;*/
 
     private void Start()
     {
@@ -74,12 +74,12 @@ public class CellDriver : MonoBehaviour
 
     private void StartShift(int x, int y, int dx, int dy, int num)
     {
-        xForShift = x;
+        /*xForShift = x;
         yForShift = y;
         dxForShift = dx;
         dyForShift = dy;
-        numForShift = num;
-        CellShiftEvent?.Invoke(this);
+        numForShift = num;*/
+        CellShiftEvent?.Invoke(this, x, y, dx, dy, num);
     }
 
     public void TryShift(int dx, int dy)

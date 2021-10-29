@@ -25,9 +25,10 @@ public class CanvasPainter : MonoBehaviour
 
     }
 
-    public void onCellShift(CellDriver cellDriver)
+    public void onCellShift(CellDriver cellDriver, int x, int y, int dx, int dy, int num)
     {
-        ShiftPanel(cellDriver.xForShift, cellDriver.yForShift, cellDriver.dxForShift, cellDriver.dyForShift, cellDriver.numForShift);
+        //ShiftPanel(cellDriver.xForShift, cellDriver.yForShift, cellDriver.dxForShift, cellDriver.dyForShift, cellDriver.numForShift);
+        ShiftPanel(x, y, dx, dy, num);
     }
 
     public void PaintPanels()
@@ -45,6 +46,11 @@ public class CanvasPainter : MonoBehaviour
                     if (panelText != null)
                     {
                         panelScript.textArray.Add(panelText);
+                    }
+                    Text panelText2 = panel.transform.Find("Text2").GetComponent<Text>();
+                    if (panelText2 != null)
+                    {
+                        panelScript.text2Array.Add(panelText2);
                     }
                 }
         }
