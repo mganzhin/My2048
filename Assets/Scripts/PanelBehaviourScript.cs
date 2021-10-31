@@ -15,7 +15,10 @@ public class PanelBehaviourScript : MonoBehaviour
     bool isShifting;
 
     private Touch theTouch;
-    private Vector2 touchStartPosition, touchEndPosition;
+    private Vector2 touchStartPosition;
+    private Vector2 touchEndPosition;
+
+    private readonly float swipeLength = 200;
 
     private AudioController gameAudio;
 
@@ -26,9 +29,15 @@ public class PanelBehaviourScript : MonoBehaviour
     {
         FindObjectOfType<CellDriver>().CellsReadyEvent += OnCellsReady;
         FindObjectOfType<CellDriver>().GameOverEvent += OnGameOver;
+        FindObjectOfType<CellDriver>().NothingToShift += OnNothingToShift;
         CanvasPainter canvasScript = GameObject.FindGameObjectWithTag("GameCanvas").GetComponent("CanvasPainter") as CanvasPainter;
         canvasScript.PaintPanels();
         RestartGame();
+    }
+
+    public void OnNothingToShift(CellDriver cellDriver)
+    {
+        isShifting = false;
     }
 
     public void OnCellsReady(CellDriver cellDriver)
@@ -82,7 +91,7 @@ public class PanelBehaviourScript : MonoBehaviour
     {
         viewModelCellDriver.clearCollapsed();
         isShifting = true;
-        viewModelCellDriver.TryShift(dx, dy);
+        viewModelCellDriver.TryShift(dx, dy, 0);
     }
 
     // Update is called once per frame
@@ -123,21 +132,21 @@ public class PanelBehaviourScript : MonoBehaviour
 
                     if (Mathf.Abs(x) > Mathf.Abs(y))
                     {
-                        if (x > 10f)
+                        if (x > swipeLength)
                         {
                             Shift(1, 0);
                         }
-                        else if (x < -10f)
+                        else if (x < -swipeLength)
                         {
                             Shift(-1, 0);
                         }
                     }
                     else
                     {
-                        if (y > 10f)
+                        if (y > swipeLength)
                         {
                             Shift(0, -1);
-                        } else if (y < -10f)
+                        } else if (y < -swipeLength)
                         {
                             Shift(0, 1);
                         }

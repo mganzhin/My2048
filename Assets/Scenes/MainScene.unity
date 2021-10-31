@@ -309,7 +309,7 @@ Camera:
   far clip plane: 500
   field of view: 60
   orthographic: 1
-  orthographic size: 58.325756
+  orthographic size: 100.31519
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -380,11 +380,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 429a0aef6064957429a99b125dfe1c3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xForShift: 0
-  yForShift: 0
-  dxForShift: 0
-  dyForShift: 0
-  numForShift: 0
 --- !u!4 &659390443
 Transform:
   m_ObjectHideFlags: 0
@@ -574,6 +569,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textArray: []
+  text2Array: []
   gameOverText: {fileID: 1811663531}
   restartButton: {fileID: 2047020648}
   viewModelCellDriver: {fileID: 659390442}

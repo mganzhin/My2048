@@ -16,6 +16,9 @@ public class CellDriver : MonoBehaviour
     public delegate void gameOver(CellDriver cellDriver);
     public event gameOver GameOverEvent;
 
+    public delegate void noShifting(CellDriver cellDriver);
+    public event noShifting NothingToShift;
+
     public void clearCollapsed()
     {
         for (int x = 0; x < maxDimension; x++)
@@ -65,7 +68,7 @@ public class CellDriver : MonoBehaviour
         CellShiftEvent?.Invoke(this, x, y, dx, dy, num);
     }
 
-    public void TryShift(int dx, int dy)
+    public void TryShift(int dx, int dy, int iteration)
     {
         bool foundShiftable = false;
         if ((dx == -1) && (dy == 0))
@@ -220,7 +223,14 @@ public class CellDriver : MonoBehaviour
         //Nothing to shift
         if (!foundShiftable)
         {
-            PlaceTwoFour();
+            if (iteration > 0)
+            {
+                PlaceTwoFour();
+            }
+            else
+            {
+                StepWithoutShift();
+            }
         }
     }
 
@@ -246,8 +256,59 @@ public class CellDriver : MonoBehaviour
         }
         else
         {
+            GameOverCondition();
+        }
+    }
+
+    public void StepWithoutShift()
+    {
+        List<Cell> emptyCells = GetEmptyCells();
+        if (emptyCells.Count > 0)
+        {
+            NothingToShift?.Invoke(this);
+        }
+        else
+        {
+            GameOverCondition();
+        }
+    }
+
+    bool FoundNearEquals(int lx, int ly, int dx, int dy)
+    {
+        bool isNearEquals = false;
+        int x = 0;
+        int y;
+        while ((x < lx) && (!isNearEquals))
+        {
+            y = 0;
+            while ((y < ly) && (!isNearEquals))
+            {
+                isNearEquals = (cells[x, y].Number == cells[x + dx, y + dy].Number);
+                Debug.Log("Near x, y: " + x + ", " + y + ":" + isNearEquals);
+                y++;
+            }
+            x++;
+        }
+        return isNearEquals;
+    }
+
+    void GameOverCondition()
+    {
+        bool isNearEquals = FoundNearEquals(maxDimension - 1, maxDimension, 1, 0);
+        
+        if (!isNearEquals)
+        {
+            isNearEquals = FoundNearEquals(maxDimension, maxDimension - 1, 0, 1);
+        }
+        
+        if (!isNearEquals)
+        {
             //Event for game over
             GameOverEvent?.Invoke(this);
+        }
+        else
+        {
+            NothingToShift?.Invoke(this);
         }
     }
 

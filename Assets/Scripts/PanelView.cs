@@ -8,7 +8,7 @@ public class PanelView : MonoBehaviour
     float startX;
     float startY;
     Vector3 startPoint;
-    float speed = 10;
+    float speed = 20;
     PanelView panelViewPutShift;
     private int numPutShift;
     private int deltaX;
@@ -73,7 +73,7 @@ public class PanelView : MonoBehaviour
                 CellDriver cellDriver = FindObjectOfType<CellDriver>();
                 if (cellDriver != null)
                 {
-                    cellDriver.TryShift(deltaX, deltaY);
+                    cellDriver.TryShift(deltaX, deltaY, 1);
                 }
             }
         }
