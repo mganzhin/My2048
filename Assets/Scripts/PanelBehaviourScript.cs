@@ -8,11 +8,11 @@ public class PanelBehaviourScript : MonoBehaviour
     public List<Text> textArray;
     public List<Text> text2Array;
 
-    public TextMeshProUGUI gameOverText;
-    public Button restartButton;
+    [SerializeField] private TextMeshProUGUI gameOverText;
+    [SerializeField] private Button restartButton;
 
-    bool isGameOver;
-    bool isShifting;
+    private bool isGameOver;
+    private bool isShifting;
 
     private Touch theTouch;
     private Vector2 touchStartPosition;
@@ -22,7 +22,7 @@ public class PanelBehaviourScript : MonoBehaviour
 
     private AudioController gameAudio;
 
-    public CellDriver viewModelCellDriver;
+    [SerializeField] private CellDriver viewModelCellDriver;
 
     // Start is called before the first frame update
     void Start()

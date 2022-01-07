@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 public class CanvasPainter : MonoBehaviour
 {
-    public GameObject panelPrefab;
-    public List<GameObject> panelList = new List<GameObject>();
+    [SerializeField] private GameObject panelPrefab;
+    private readonly List<GameObject> panelList = new List<GameObject>();
 
     private void Start()
     {

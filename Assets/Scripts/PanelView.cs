@@ -5,11 +5,11 @@ public class PanelView : MonoBehaviour
 {
     private int distanceX = 0;
     private int distanceY = 0;
-    float startX;
-    float startY;
-    Vector3 startPoint;
-    float speed = 20;
-    PanelView panelViewPutShift;
+    private float startX;
+    private float startY;
+    private Vector3 startPoint;
+    private float speed = 20;
+    private PanelView panelViewPutShift;
     private int numPutShift;
     private int deltaX;
     private int deltaY;
