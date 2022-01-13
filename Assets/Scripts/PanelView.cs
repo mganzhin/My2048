@@ -8,16 +8,24 @@ public class PanelView : MonoBehaviour
     private float startX;
     private float startY;
     private Vector3 startPoint;
-    private float speed = 20;
+    private readonly float speed = 20;
     private PanelView panelViewPutShift;
     private int numPutShift;
     private int deltaX;
     private int deltaY;
+    private CellDriver cellDriver;
+    private Text panelText;
+    private Text panelText2;
+    private Text panelPutShiftText;
+    private Text panelPutShiftText2;
 
     // Start is called before the first frame update
     void Start()
     {
+        cellDriver = FindObjectOfType<CellDriver>();
         startPoint = transform.position;
+        panelText = transform.Find("Text").GetComponent<Text>();
+        panelText2 = transform.Find("Text2").GetComponent<Text>();
     }
 
     public void ShiftPanel(int dx, int dy, PanelView desinationPanelView, int num)
@@ -30,6 +38,8 @@ public class PanelView : MonoBehaviour
         distanceX = dx * 25;
         distanceY = -dy * 25;
         panelViewPutShift = desinationPanelView;
+        panelPutShiftText = panelViewPutShift.transform.Find("Text").GetComponent<Text>();
+        panelPutShiftText2 = panelViewPutShift.transform.Find("Text2").GetComponent<Text>();
         numPutShift = num;
     }
 
@@ -47,30 +57,25 @@ public class PanelView : MonoBehaviour
                 transform.position = startPoint;
                 distanceX = 0;
                 distanceY = 0;
-                Text panelText = transform.Find("Text").GetComponent<Text>();
                 if (panelText != null)
                 {
                     panelText.text = "";
                 }
-                Text panelText2 = transform.Find("Text2").GetComponent<Text>();
                 if (panelText2 != null)
                 {
                     panelText2.text = "";
                 }
                 if (panelViewPutShift != null)
                 {
-                    Text panelPutShiftText = panelViewPutShift.transform.Find("Text").GetComponent<Text>();
                     if (panelPutShiftText != null)
                     {
                         panelPutShiftText.text = numPutShift.ToString();
                     }
-                    Text panelPutShiftText2 = panelViewPutShift.transform.Find("Text2").GetComponent<Text>();
                     if (panelPutShiftText2 != null)
                     {
                         panelPutShiftText2.text = "2";
                     }
                 }
-                CellDriver cellDriver = FindObjectOfType<CellDriver>();
                 if (cellDriver != null)
                 {
                     cellDriver.TryShift(deltaX, deltaY, 1);

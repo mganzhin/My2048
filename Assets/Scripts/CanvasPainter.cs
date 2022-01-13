@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class CanvasPainter : MonoBehaviour
 {
     [SerializeField] private GameObject panelPrefab;
-    private readonly List<GameObject> panelList = new List<GameObject>();
+    private readonly List<PanelView> panelList = new List<PanelView>();
 
     private void Start()
     {
@@ -21,13 +21,15 @@ public class CanvasPainter : MonoBehaviour
     {
         if (panelPrefab != null)
         {
-            PanelBehaviourScript panelScript = GameObject.FindGameObjectWithTag("GameController").GetComponent("PanelBehaviourScript") as PanelBehaviourScript;
+            PanelBehaviourScript panelScript = GameObject.FindGameObjectWithTag("GameController").GetComponent<PanelBehaviourScript>();
+            GameObject panelKeeper = GameObject.FindGameObjectWithTag("PanelKeeper");
             for (int y = 0; y < 4; y++)
                 for (int x = 0; x < 4; x++)
                 {
                     GameObject panel = Instantiate(panelPrefab, new Vector3(x * 110 - 114, -y * 110 + 114, 0), Quaternion.identity);
-                    panel.transform.SetParent(GameObject.FindGameObjectWithTag("PanelKeeper").transform, false);
-                    panelList.Add(panel);
+                    panel.transform.SetParent(panelKeeper.transform, false);
+                    PanelView panelView = panel.GetComponent<PanelView>();
+                    panelList.Add(panelView);
                     Text panelText = panel.transform.Find("Text").GetComponent<Text>();
                     if (panelText != null)
                     {
@@ -42,10 +44,10 @@ public class CanvasPainter : MonoBehaviour
         }
     }
 
-    void ShiftPanel(int x, int y, int dx, int dy, int num)
+    private void ShiftPanel(int x, int y, int dx, int dy, int num)
     {
-        PanelView destinationPanel = panelList[(y + dy) * 4 + (x + dx)].GetComponent<PanelView>();
-        panelList[y * 4 + x].GetComponent<PanelView>().ShiftPanel(dx, dy, destinationPanel, num);
+        PanelView destinationPanel = panelList[(y + dy) * 4 + (x + dx)];
+        panelList[y * 4 + x].ShiftPanel(dx, dy, destinationPanel, num);
     }
 
     

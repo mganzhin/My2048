@@ -27,10 +27,10 @@ public class PanelBehaviourScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        FindObjectOfType<CellDriver>().CellsReadyEvent += OnCellsReady;
-        FindObjectOfType<CellDriver>().GameOverEvent += OnGameOver;
-        FindObjectOfType<CellDriver>().NothingToShift += OnNothingToShift;
-        CanvasPainter canvasScript = GameObject.FindGameObjectWithTag("GameCanvas").GetComponent("CanvasPainter") as CanvasPainter;
+        viewModelCellDriver.CellsReadyEvent += OnCellsReady;
+        viewModelCellDriver.GameOverEvent += OnGameOver;
+        viewModelCellDriver.NothingToShift += OnNothingToShift;
+        CanvasPainter canvasScript = GameObject.FindGameObjectWithTag("GameCanvas").GetComponent<CanvasPainter>();
         canvasScript.PaintPanels();
         RestartGame();
     }
@@ -89,7 +89,7 @@ public class PanelBehaviourScript : MonoBehaviour
     
     private void Shift(int dx, int dy)
     {
-        viewModelCellDriver.clearCollapsed();
+        viewModelCellDriver.ClearCollapsed();
         isShifting = true;
         viewModelCellDriver.TryShift(dx, dy, 0);
     }

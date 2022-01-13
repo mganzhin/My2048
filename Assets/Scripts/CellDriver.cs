@@ -4,8 +4,8 @@ using UnityEngine;
 public class CellDriver : MonoBehaviour
 {
     public static readonly int maxDimension = 4;
-    private Cell[,] cells = new Cell[maxDimension, maxDimension];
-    private bool[,] collapsedCells = new bool[maxDimension, maxDimension];
+    private readonly Cell[,] cells = new Cell[maxDimension, maxDimension];
+    private readonly bool[,] collapsedCells = new bool[maxDimension, maxDimension];
 
     public delegate void cellsReady(CellDriver cellDriver);
     public event cellsReady CellsReadyEvent;
@@ -19,7 +19,7 @@ public class CellDriver : MonoBehaviour
     public delegate void noShifting(CellDriver cellDriver);
     public event noShifting NothingToShift;
 
-    public void clearCollapsed()
+    public void ClearCollapsed()
     {
         for (int x = 0; x < maxDimension; x++)
             for (int y = 0; y < maxDimension; y++)
@@ -50,22 +50,39 @@ public class CellDriver : MonoBehaviour
         CellsReadyEvent?.Invoke(this);
     }
 
-    public void ClearCells()
-    {
-        for (int x = 0; x < maxDimension; x++)
-            for (int y = 0; y < maxDimension; y++)
-            {
-                if (cells[x, y] != null)
-                {
-                    cells[x, y].Number = 0;
-                }
-            }
-        CellsReadyEvent?.Invoke(this);
-    }
-
     private void StartShift(int x, int y, int dx, int dy, int num)
     {
         CellShiftEvent?.Invoke(this, x, y, dx, dy, num);
+    }
+
+    private bool OneStepShift(int ix, int iy, int dx, int dy)
+    {
+        bool foundShiftable = false;
+        if (cells[ix, iy].Number > 0)
+        {
+            if (cells[ix + dx, iy + dy].Number == 0)
+            {
+                cells[ix + dx, iy + dy].Number = cells[ix, iy].Number;
+                cells[ix, iy].Number = 0;
+                foundShiftable = true;
+                //Call event to shift
+                StartShift(ix, iy, dx, dy, cells[ix + dx, iy + dy].Number);
+            }
+            else
+            {
+                if ((cells[ix + dx, iy + dy].Number == cells[ix, iy].Number) && (!collapsedCells[ix, iy]))
+                {
+                    cells[ix + dx, iy + dy].Number++;
+                    cells[ix, iy].Number = 0;
+                    collapsedCells[ix + dx, iy + dy] = true;
+                    collapsedCells[ix, iy] = true;
+                    foundShiftable = true;
+                    //Call event to shift
+                    StartShift(ix, iy, dx, dy, cells[ix + dx, iy + dy].Number);
+                }
+            }
+        }
+        return foundShiftable;
     }
 
     public void TryShift(int dx, int dy, int iteration)
@@ -79,30 +96,7 @@ public class CellDriver : MonoBehaviour
                 int ix = 1;
                 while ((ix < maxDimension) && (!foundShiftable))
                 {
-                    if (cells[ix, iy].Number > 0)
-                    {
-                        if (cells[ix - 1, iy].Number == 0)
-                        {
-                            cells[ix - 1, iy].Number = cells[ix, iy].Number;
-                            cells[ix, iy].Number = 0;
-                            foundShiftable = true;
-                            //Call event to shift
-                            StartShift(ix, iy, dx, dy, cells[ix - 1, iy].Number);
-                        }
-                        else
-                        {
-                            if ((cells[ix - 1, iy].Number == cells[ix, iy].Number) && (!collapsedCells[ix, iy]))
-                            {
-                                cells[ix - 1, iy].Number++;
-                                cells[ix, iy].Number = 0;
-                                collapsedCells[ix - 1, iy] = true;
-                                collapsedCells[ix, iy] = true;
-                                foundShiftable = true;
-                                //Call event to shift
-                                StartShift(ix, iy, dx, dy, cells[ix - 1, iy].Number);
-                            }
-                        }
-                    }
+                    foundShiftable = OneStepShift(ix, iy, dx, dy);
                     ix++;
                 }
                 iy++;
@@ -117,30 +111,7 @@ public class CellDriver : MonoBehaviour
                 int ix = maxDimension - 2;
                 while ((ix >= 0) && (!foundShiftable))
                 {
-                    if (cells[ix, iy].Number > 0)
-                    {
-                        if (cells[ix + 1, iy].Number == 0)
-                        {
-                            cells[ix + 1, iy].Number = cells[ix, iy].Number;
-                            cells[ix, iy].Number = 0;
-                            foundShiftable = true;
-                            //Call event to shift
-                            StartShift(ix, iy, dx, dy, cells[ix + 1, iy].Number);
-                        }
-                        else
-                        {
-                            if ((cells[ix + 1, iy].Number == cells[ix, iy].Number) && (!collapsedCells[ix, iy]))
-                            {
-                                cells[ix + 1, iy].Number++;
-                                cells[ix, iy].Number = 0;
-                                collapsedCells[ix + 1, iy] = true;
-                                collapsedCells[ix, iy] = true;
-                                foundShiftable = true;
-                                //Call event to shift
-                                StartShift(ix, iy, dx, dy, cells[ix + 1, iy].Number);
-                            }
-                        }
-                    }
+                    foundShiftable = OneStepShift(ix, iy, dx, dy);
                     ix--;
                 }
                 iy++;
@@ -154,30 +125,7 @@ public class CellDriver : MonoBehaviour
                 int iy = 1;
                 while ((iy < maxDimension) && (!foundShiftable))
                 {
-                    if (cells[ix, iy].Number > 0)
-                    {
-                        if (cells[ix, iy - 1].Number == 0)
-                        {
-                            cells[ix, iy - 1].Number = cells[ix, iy].Number;
-                            cells[ix, iy].Number = 0;
-                            foundShiftable = true;
-                            //Call event to shift
-                            StartShift(ix, iy, dx, dy, cells[ix, iy - 1].Number);
-                        }
-                        else
-                        {
-                            if ((cells[ix, iy - 1].Number == cells[ix, iy].Number) && (!collapsedCells[ix, iy]))
-                            {
-                                cells[ix, iy - 1].Number++;
-                                cells[ix, iy].Number = 0;
-                                collapsedCells[ix, iy - 1] = true;
-                                collapsedCells[ix, iy] = true;
-                                foundShiftable = true;
-                                //Call event to shift
-                                StartShift(ix, iy, dx, dy, cells[ix, iy - 1].Number);
-                            }
-                        }
-                    }
+                    foundShiftable = OneStepShift(ix, iy, dx, dy);
                     iy++;
                 }
                 ix++;
@@ -191,30 +139,7 @@ public class CellDriver : MonoBehaviour
                 int iy = maxDimension - 2;
                 while ((iy >= 0) && (!foundShiftable))
                 {
-                    if (cells[ix, iy].Number > 0)
-                    {
-                        if (cells[ix, iy + 1].Number == 0)
-                        {
-                            cells[ix, iy + 1].Number = cells[ix, iy].Number;
-                            cells[ix, iy].Number = 0;
-                            foundShiftable = true;
-                            //Call event to shift
-                            StartShift(ix, iy, dx, dy, cells[ix, iy + 1].Number);
-                        }
-                        else
-                        {
-                            if ((cells[ix, iy + 1].Number == cells[ix, iy].Number) && (!collapsedCells[ix, iy]))
-                            {
-                                cells[ix, iy + 1].Number++;
-                                cells[ix, iy].Number = 0;
-                                collapsedCells[ix, iy + 1] = true;
-                                collapsedCells[ix, iy] = true;
-                                foundShiftable = true;
-                                //Call event to shift
-                                StartShift(ix, iy, dx, dy, cells[ix, iy + 1].Number);
-                            }
-                        }
-                    }
+                    foundShiftable = OneStepShift(ix, iy, dx, dy);
                     iy--;
                 }
                 ix++;
@@ -234,7 +159,7 @@ public class CellDriver : MonoBehaviour
         }
     }
 
-    public List<Cell> GetEmptyCells()
+    private List<Cell> GetEmptyCells()
     {
         List<Cell> cellList = new List<Cell>();
         for (int x = 0; x < maxDimension; x++)
@@ -260,7 +185,7 @@ public class CellDriver : MonoBehaviour
         }
     }
 
-    public void StepWithoutShift()
+    private void StepWithoutShift()
     {
         List<Cell> emptyCells = GetEmptyCells();
         if (emptyCells.Count > 0)
@@ -273,7 +198,7 @@ public class CellDriver : MonoBehaviour
         }
     }
 
-    bool FoundNearEquals(int lx, int ly, int dx, int dy)
+    private bool FoundNearEquals(int lx, int ly, int dx, int dy)
     {
         bool isNearEquals = false;
         int x = 0;
@@ -284,7 +209,7 @@ public class CellDriver : MonoBehaviour
             while ((y < ly) && (!isNearEquals))
             {
                 isNearEquals = (cells[x, y].Number == cells[x + dx, y + dy].Number);
-                Debug.Log("Near x, y: " + x + ", " + y + ":" + isNearEquals);
+                //Debug.Log("Near x, y: " + x + ", " + y + ":" + isNearEquals);
                 y++;
             }
             x++;
@@ -292,7 +217,7 @@ public class CellDriver : MonoBehaviour
         return isNearEquals;
     }
 
-    void GameOverCondition()
+    private void GameOverCondition()
     {
         bool isNearEquals = FoundNearEquals(maxDimension - 1, maxDimension, 1, 0);
         
@@ -312,7 +237,7 @@ public class CellDriver : MonoBehaviour
         }
     }
 
-    void SetTwoFour(int x, int y)
+    private void SetTwoFour(int x, int y)
     {
         if (Random.Range(0, 100) > 10)
         {

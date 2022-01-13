@@ -2,13 +2,20 @@ using UnityEngine;
 
 public class AudioController : MonoBehaviour
 {
+    private AudioSource audioSource;
+
+    private void Start()
+    {
+        audioSource = gameObject.GetComponent<AudioSource>();
+    }
+
     public void PlayMusic()
     {
-        gameObject.GetComponent<AudioSource>().Play();
+        audioSource.Play();
     }
 
     public void StopMusic()
     {
-        gameObject.GetComponent<AudioSource>().Stop();
+        audioSource.Stop();
     }
 }
