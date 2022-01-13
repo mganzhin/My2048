@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AudioController : MonoBehaviour
 {
+    [SerializeField] private Toggle musicToggle;
     private AudioSource audioSource;
 
     private void Start()
@@ -9,13 +11,46 @@ public class AudioController : MonoBehaviour
         audioSource = gameObject.GetComponent<AudioSource>();
     }
 
+    public void ToggleMusic()
+    {
+        if (musicToggle != null)
+        {
+            if (musicToggle.isOn)
+            {
+                if (audioSource != null)
+                {
+                    audioSource.Play();
+                }
+            }
+            else
+            {
+                if (audioSource != null)
+                {
+                    audioSource.Stop();
+                }
+            }
+        }
+    }
+
     public void PlayMusic()
     {
-        audioSource.Play();
+        if (musicToggle != null)
+        {
+            if (musicToggle.isOn)
+            {
+                if (audioSource != null)
+                {
+                    audioSource.Play();
+                }
+            }
+        }
     }
 
     public void StopMusic()
     {
-        audioSource.Stop();
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+        }
     }
 }
