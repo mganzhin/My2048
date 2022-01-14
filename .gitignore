@@ -12,7 +12,6 @@
 /[Ww]ebGL Builds/
 /[Ww]ebGLBuilds/
 /[Uu]serSettings/
-/[Pp]roject[Ss]ettings/Packages/com.unity.connect.share/Settings.json
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
