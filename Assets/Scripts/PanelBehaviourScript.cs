@@ -5,11 +5,14 @@ using TMPro;
 
 public class PanelBehaviourScript : MonoBehaviour
 {
-    public List<Text> textArray;
-    public List<Text> text2Array;
-
+    [SerializeField] private CellDriver viewModelCellDriver;
     [SerializeField] private TextMeshProUGUI gameOverText;
     [SerializeField] private Button restartButton;
+    [SerializeField] private CanvasPainter canvasScript;
+    [SerializeField] private AudioController gameAudio;
+
+    public List<Text> textArray;
+    public List<Text> text2Array;
 
     private bool isGameOver;
     private bool isShifting;
@@ -20,17 +23,12 @@ public class PanelBehaviourScript : MonoBehaviour
 
     private readonly float swipeLength = 200;
 
-    private AudioController gameAudio;
-
-    [SerializeField] private CellDriver viewModelCellDriver;
-
     // Start is called before the first frame update
     void Start()
     {
         viewModelCellDriver.CellsReadyEvent += OnCellsReady;
         viewModelCellDriver.GameOverEvent += OnGameOver;
         viewModelCellDriver.NothingToShift += OnNothingToShift;
-        CanvasPainter canvasScript = GameObject.FindGameObjectWithTag("GameCanvas").GetComponent<CanvasPainter>();
         canvasScript.PaintPanels();
         RestartGame();
     }
@@ -77,7 +75,6 @@ public class PanelBehaviourScript : MonoBehaviour
         isGameOver = false;
         isShifting = false;
         ShowGameOver(isGameOver);
-        gameAudio = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<AudioController>();
         gameAudio.PlayMusic();
     }
         

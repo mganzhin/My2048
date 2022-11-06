@@ -3,6 +3,15 @@ using UnityEngine.UI;
 
 public class PanelView : MonoBehaviour
 {
+    [SerializeField] private Text panelText; 
+    [SerializeField] private Text panelText2;
+
+    public delegate void tryShift(int dx, int dy, int iteration);
+    public event tryShift TryShiftEvent;
+
+    public Text PanelText => panelText;
+    public Text PanelText2 => panelText2;
+
     private int distanceX = 0;
     private int distanceY = 0;
     private float startX;
@@ -13,19 +22,14 @@ public class PanelView : MonoBehaviour
     private int numPutShift;
     private int deltaX;
     private int deltaY;
-    private CellDriver cellDriver;
-    private Text panelText;
-    private Text panelText2;
+
     private Text panelPutShiftText;
     private Text panelPutShiftText2;
 
     // Start is called before the first frame update
     void Start()
     {
-        cellDriver = FindObjectOfType<CellDriver>();
         startPoint = transform.position;
-        panelText = transform.Find("Text").GetComponent<Text>();
-        panelText2 = transform.Find("Text2").GetComponent<Text>();
     }
 
     public void ShiftPanel(int dx, int dy, PanelView desinationPanelView, int num)
@@ -38,8 +42,8 @@ public class PanelView : MonoBehaviour
         distanceX = dx * 25;
         distanceY = -dy * 25;
         panelViewPutShift = desinationPanelView;
-        panelPutShiftText = panelViewPutShift.transform.Find("Text").GetComponent<Text>();
-        panelPutShiftText2 = panelViewPutShift.transform.Find("Text2").GetComponent<Text>();
+        panelPutShiftText = panelViewPutShift.PanelText;
+        panelPutShiftText2 = panelViewPutShift.PanelText2;
         numPutShift = num;
     }
 
@@ -76,10 +80,7 @@ public class PanelView : MonoBehaviour
                         panelPutShiftText2.text = "2";
                     }
                 }
-                if (cellDriver != null)
-                {
-                    cellDriver.TryShift(deltaX, deltaY, 1);
-                }
+                TryShiftEvent?.Invoke(deltaX, deltaY, 1);
             }
         }
     }

@@ -1,15 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CanvasPainter : MonoBehaviour
 {
-    [SerializeField] private GameObject panelPrefab;
-    private readonly List<PanelView> panelList = new List<PanelView>();
+    [SerializeField] private PanelView panelViewPrefab;
+    [SerializeField] private CellDriver cellDriver;
+    [SerializeField] private PanelBehaviourScript panelScript;
+    [SerializeField] private GameObject panelKeeper;
+    private readonly List<PanelView> panelList = new();
 
     private void Start()
     {
-        FindObjectOfType<CellDriver>().CellShiftEvent += OnCellShift;
+        cellDriver.CellShiftEvent += OnCellShift;
     }
 
     public void OnCellShift(CellDriver cellDriver, int x, int y, int dx, int dy, int num)
@@ -17,28 +19,34 @@ public class CanvasPainter : MonoBehaviour
         ShiftPanel(x, y, dx, dy, num);
     }
 
+    private void OnTryShift(int dx, int dy, int iteration)
+    {
+        if (cellDriver != null)
+        {
+            cellDriver.TryShift(dx, dy, iteration);
+        }
+    }
+
     public void PaintPanels()
     {
-        if (panelPrefab != null)
+        if (panelViewPrefab != null)
         {
-            PanelBehaviourScript panelScript = GameObject.FindGameObjectWithTag("GameController").GetComponent<PanelBehaviourScript>();
-            GameObject panelKeeper = GameObject.FindGameObjectWithTag("PanelKeeper");
             for (int y = 0; y < 4; y++)
                 for (int x = 0; x < 4; x++)
                 {
-                    GameObject panel = Instantiate(panelPrefab, new Vector3(x * 110 - 114, -y * 110 + 114, 0), Quaternion.identity);
-                    panel.transform.SetParent(panelKeeper.transform, false);
-                    PanelView panelView = panel.GetComponent<PanelView>();
+                    PanelView panelView = Instantiate(panelViewPrefab, 
+                        new Vector3(x * 25 - 37, -y * 25 + 25, 0), 
+                        Quaternion.identity, 
+                        panelKeeper.transform);
+                    panelView.TryShiftEvent += OnTryShift;
                     panelList.Add(panelView);
-                    Text panelText = panel.transform.Find("Text").GetComponent<Text>();
-                    if (panelText != null)
+                    if (panelView.PanelText != null)
                     {
-                        panelScript.textArray.Add(panelText);
+                        panelScript.textArray.Add(panelView.PanelText);
                     }
-                    Text panelText2 = panel.transform.Find("Text2").GetComponent<Text>();
-                    if (panelText2 != null)
+                    if (panelView.PanelText2 != null)
                     {
-                        panelScript.text2Array.Add(panelText2);
+                        panelScript.text2Array.Add(panelView.PanelText2);
                     }
                 }
         }

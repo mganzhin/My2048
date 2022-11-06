@@ -4,13 +4,8 @@ using UnityEngine.UI;
 public class AudioController : MonoBehaviour
 {
     [SerializeField] private Toggle musicToggle;
-    private AudioSource audioSource;
-
-    private void Start()
-    {
-        audioSource = gameObject.GetComponent<AudioSource>();
-    }
-
+    [SerializeField] private AudioSource audioSource;
+    
     public void ToggleMusic()
     {
         if (musicToggle != null)

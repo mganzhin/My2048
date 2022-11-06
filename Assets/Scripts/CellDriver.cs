@@ -161,7 +161,7 @@ public class CellDriver : MonoBehaviour
 
     private List<Cell> GetEmptyCells()
     {
-        List<Cell> cellList = new List<Cell>();
+        List<Cell> cellList = new();
         for (int x = 0; x < maxDimension; x++)
             for (int y = 0; y < maxDimension; y++)
                 if (cells[x, y].Number == 0)
@@ -209,7 +209,6 @@ public class CellDriver : MonoBehaviour
             while ((y < ly) && (!isNearEquals))
             {
                 isNearEquals = (cells[x, y].Number == cells[x + dx, y + dy].Number);
-                //Debug.Log("Near x, y: " + x + ", " + y + ":" + isNearEquals);
                 y++;
             }
             x++;
